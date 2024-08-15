@@ -1,5 +1,4 @@
 const express = require('express');
-const serverless = require('serverless-http');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const BLOG = require('./models/blog'); // Adjust the path as needed
