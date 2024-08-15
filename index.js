@@ -62,4 +62,4 @@ app.use((req, res) => {
 });
 
 // Export the app
-module.exports.handler = serverless(app);
+module.exports.handler = app;
