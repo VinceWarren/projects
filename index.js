@@ -1,30 +1,23 @@
 const express = require('express');
+const serverless = require('serverless-http');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const BLOG = require('./models/blog'); // Adjust the path as needed
+
 const app = express();
 const PORT = process.env.PORT || 8080;
-const morgan = require('morgan');
-const mongoose = require('mongoose');
 const dbURI = 'mongodb+srv://vince:vince123@cluster0.vycwj80.mongodb.net/BlogData?retryWrites=true&w=majority&appName=Cluster0';
-const BLOG = require('./models/blog');
-const bodyParser = require('body-parser');
 
-
-mongoose.connect(dbURI)
-.then((result)=>{
-    console.log('Connected to DB')
-    app.listen(PORT, ()=>{
-        console.log(`Server live at PORT ${PORT}`);
-    })
-})
-.catch((err)=>{console.log(err)});
-
+// Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.set('view engine', 'ejs');
-app.set('views', 'views')
 
-app.use(express.static('public'));
-app.use(morgan('dev'));
+// Database connection
+mongoose.connect(dbURI)
+.then(() => console.log('Connected to DB'))
+.catch(err => console.log(err));
 
+// Routes
 app.post('/add-blog', async (req, res) => {
     try {
         const { title, author, description } = req.body;
@@ -34,9 +27,7 @@ app.post('/add-blog', async (req, res) => {
             description: description,
         });
         console.log('Data received:', req.body);
-
         await save.save();
-
         res.status(201).send('Blog post created successfully');
     } catch (err) {
         console.log(err);
@@ -44,8 +35,8 @@ app.post('/add-blog', async (req, res) => {
     }
 });
 
-app.get('/', async (req, res)=>{
-    try{
+app.get('/', async (req, res) => {
+    try {
         const data = await BLOG.find();
         const blogs = data.map(blog => ({
             title: blog.title,
@@ -53,21 +44,23 @@ app.get('/', async (req, res)=>{
             description: blog.description,
             time: blog.createdAt
         }));
-        const time = blogs.createdAt;
         res.render('index', {title: 'Home', blogs});
+    } catch (err) {
+        console.log(err);
     }
-    catch(err){
-        console.log(err)
-    }
-})
+});
 
-app.get('/about', (req, res)=>{
+app.get('/about', (req, res) => {
     res.render('about', {title: 'About'});
-})
-app.get('/create', (req,res) =>{
-    res.render('create', {title: 'New Blog'})
-})
-app.use((req,res)=>{
-    res.render('404', {title: '404'});
-})
+});
 
+app.get('/create', (req, res) => {
+    res.render('create', {title: 'New Blog'});
+});
+
+app.use((req, res) => {
+    res.render('404', {title: '404'});
+});
+
+// Export the app
+module.exports.handler = serverless(app);
