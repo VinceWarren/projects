@@ -24,6 +24,7 @@
     "morgan": "^1.10.0",
     "nodemon": "^3.1.0",
     "path": "^0.12.7",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "serverless-http": "^2.7.0"
   }
 }
