@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const BLOG = require('./models/blog'); // Adjust the path as needed
+const BLOG = require('./models/blog');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
